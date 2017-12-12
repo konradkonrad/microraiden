@@ -36,6 +36,9 @@ class Expensive(Resource):
         self.receiver_address = channel_manager.receiver
         assert is_address(self.contract_address)
         assert is_address(self.receiver_address)
+        self.receiver_address = channel_manager.receiver
+        assert is_address(self.contract_address)
+        assert is_address(self.receiver_address)
         self.channel_manager = channel_manager
         self.light_client_proxy = light_client_proxy
         self._price = price
