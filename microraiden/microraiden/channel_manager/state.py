@@ -240,6 +240,7 @@ class ChannelManagerState(object):
         c = self.conn.cursor()
         c.execute('SELECT rowid, * FROM `channels` WHERE `confirmed` = ?', [confirmed])
         for result in c.fetchall():
+            assert 'state' in result
             channel = self.result_to_channel(result)
             ret[result['sender'], result['open_block_number']] = channel
         return ret
@@ -343,6 +344,7 @@ class ChannelManagerState(object):
         c.execute(sql, [sender.lower(), open_block_number])
         result = c.fetchone()
         assert c.fetchone() is None
+        assert 'state' in result
         return self.result_to_channel(result)
 
     def del_channel(self, sender: str, open_block_number: int):
