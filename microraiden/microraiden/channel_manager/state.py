@@ -240,7 +240,9 @@ class ChannelManagerState(object):
         c = self.conn.cursor()
         c.execute('SELECT rowid, * FROM `channels` WHERE `confirmed` = ?', [confirmed])
         for result in c.fetchall():
-            assert 'state' in result
+            if not 'state' in result:
+                print(result)
+                continue
             channel = self.result_to_channel(result)
             ret[result['sender'], result['open_block_number']] = channel
         return ret
