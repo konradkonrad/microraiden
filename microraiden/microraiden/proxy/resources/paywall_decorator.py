@@ -201,6 +201,7 @@ class Paywall(object):
         return make_response(reply_data, 402, headers)
 
     def reply_webui(self, reply_data='', headers: dict={}):
+        assert False
         headers.update({
             "Content-Type": "text/html",
         })
