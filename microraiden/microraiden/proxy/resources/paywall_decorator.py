@@ -122,11 +122,13 @@ class Paywall(object):
 
         # all ok, return actual content
         resp = method(request.path, *args, **kwargs)
+        print(resp.headers)
         if isinstance(resp, Response):
             return resp
         else:
             data, code, resource_headers = unpack(resp)
             resource_headers.update(headers)
+            print(resource_headers)
             return make_response(str(data), code, resource_headers)
 
     def paywall_check(self, price, data):

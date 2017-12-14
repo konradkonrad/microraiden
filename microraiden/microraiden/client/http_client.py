@@ -100,6 +100,8 @@ class HTTPClient(object):
             kwargs['headers'] = headers
         else:
             kwargs['headers'] = headers
+        kwargs['headers']['Accept'] = 'application/json'
+        print(kwargs['headers'])
         response = requests.request(method, url, **kwargs)
         response_headers = HTTPHeaders.deserialize(response.headers)
 
