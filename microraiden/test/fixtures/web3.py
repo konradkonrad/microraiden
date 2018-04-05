@@ -7,13 +7,16 @@ import rlp
 from _pytest.monkeypatch import MonkeyPatch
 from eth_utils import decode_hex
 from ethereum.transactions import Transaction
-import ethereum.tester
-from populus.wait import Wait
 
-from web3 import Web3, EthereumTesterProvider
+from web3 import Web3
+from eth_tester import EthereumTester, PyEVMBackend
+from web3.providers.eth_tester import EthereumTesterProvider
+
+# from eth_tester.backends import PyEVMBackend
 from web3.contract import Contract
 from web3.providers.rpc import HTTPProvider
 
+from microraiden.vendor.populus.wait import Wait
 from microraiden.config import NETWORK_CFG
 from microraiden.constants import WEB3_PROVIDER_DEFAULT
 from microraiden.utils import (
@@ -122,8 +125,8 @@ def channel_manager_address(
 @pytest.fixture(scope='session')
 def web3(use_tester: bool, faucet_private_key: str, faucet_address: str, mine_sync_event):
     if use_tester:
-        provider = EthereumTesterProvider()
-        web3 = Web3(provider)
+        provider = PyEVMBackend()
+        web3 = Web3(EthereumTesterProvider(EthereumTester(provider)))
         NETWORK_CFG.set_defaults(get_network_id('ethereum-tester'))
         x = web3.testing.mine
 
@@ -166,8 +169,7 @@ def web3(use_tester: bool, faucet_private_key: str, faucet_address: str, mine_sy
         )
 
         # add faucet account to tester
-        ethereum.tester.accounts.append(decode_hex(faucet_address))
-        ethereum.tester.keys.append(decode_hex(faucet_private_key))
+        provider.add_account(decode_hex(faucet_private_key.decode('ascii')))
 
         # make faucet rich
         web3.eth.sendTransaction({'to': faucet_address, 'value': FAUCET_ALLOWANCE})
@@ -180,8 +182,7 @@ def web3(use_tester: bool, faucet_private_key: str, faucet_address: str, mine_sy
     yield web3
 
     if use_tester:
-        ethereum.tester.accounts.remove(decode_hex(faucet_address))
-        ethereum.tester.keys.remove(decode_hex(faucet_private_key))
+        provider.account_keys.keys.remove(faucet_private_key)
 
 
 @pytest.fixture

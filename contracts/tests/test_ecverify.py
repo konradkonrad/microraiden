@@ -1,5 +1,5 @@
 import pytest
-from ethereum import tester
+from eth_tester.exceptions import TransactionFailed
 from utils import sign
 from eth_utils import encode_hex, is_same_address
 from tests.utils import balance_proof_hash, closing_message_hash
@@ -44,7 +44,7 @@ def test_ecrecover_output(web3, ecverify_test_contract):
     s = bytes.fromhex('5d4ea3a13697c1d506f7bdb8cd672b944e2053d6d6bd87d4aa512fdc29ed9ae4')
     v = 28
 
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         ecverify_test_contract.call().verify_ecrecover_output(balance_message_hash, r, s, 0)
 
     # We have to simulate mining because ecrecover consumes a lot of gas for precompiled contracts
@@ -73,21 +73,21 @@ def test_sign(web3, ecverify_test_contract):
     assert len(signed_message) == 65
     assert len(signed_message_false) == 65
 
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         verified_address = ecverify_test_contract.call().verify(
             balance_message_hash,
             encode_hex(bytearray())
         )
 
     web3.testing.mine(30)
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         verified_address = ecverify_test_contract.call().verify(
             balance_message_hash,
             encode_hex(bytearray(64))
         )
 
     web3.testing.mine(30)
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         verified_address = ecverify_test_contract.call().verify(
             balance_message_hash,
             encode_hex(bytearray(66))

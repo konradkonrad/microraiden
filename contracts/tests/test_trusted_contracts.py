@@ -1,5 +1,5 @@
 import pytest
-from ethereum import tester
+from eth_tester.exceptions import TransactionFailed
 from tests.fixtures import (
     challenge_period_min,
     contract_params,
@@ -78,7 +78,7 @@ def test_add_trusted_contracts_only_owner(owner, get_accounts, uraiden_instance,
     (A, B) = get_accounts(2)
     trusted_contract = delegate_contract()
 
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         uraiden_instance.transact({'from': A}).addTrustedContracts([trusted_contract.address])
 
     uraiden_instance.transact({'from': owner}).addTrustedContracts([trusted_contract.address])
@@ -161,7 +161,7 @@ def test_remove_trusted_contracts_only_owner(owner, get_accounts, uraiden_instan
     uraiden_instance.transact({'from': owner}).addTrustedContracts([trusted_contract.address])
     assert uraiden_instance.call().trusted_contracts(trusted_contract.address)
 
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         uraiden_instance.transact({'from': A}).removeTrustedContracts([trusted_contract.address])
 
     uraiden_instance.transact({'from': owner}).removeTrustedContracts(

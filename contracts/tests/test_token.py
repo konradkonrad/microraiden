@@ -1,5 +1,5 @@
 import pytest
-from ethereum import tester
+from eth_tester.exceptions import TransactionFailed
 from tests.fixtures import (
     owner_index,
     owner,
@@ -24,7 +24,7 @@ def test_token_mint(web3, token_contract, contract_params, get_accounts):
     with pytest.raises(TypeError):
         token.transact({'from': A}).mint(-3)
 
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         token.transact({'from': A}).mint()
 
     wei_value = 10**17 + 21000

@@ -1,5 +1,5 @@
 import pytest
-from ethereum import tester
+from eth_tester.exceptions import TransactionFailed
 from utils import sign
 from tests.utils import (
     print_logs,
@@ -158,7 +158,7 @@ def channel_settle_tests(uraiden_instance, token, channel):
     # TODO: why this fails?
     # token.transact({"from": sender}).approve(uraiden_instance.address, 33)
 
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         uraiden_instance.transact({'from': sender}).topUp(receiver, open_block_number, 33)
 
 
@@ -168,7 +168,7 @@ def channel_pre_close_tests(uraiden_instance, token, channel, top_up_deposit=0):
     # Approve token allowance
     token.transact({"from": sender}).approve(uraiden_instance.address, 33)
 
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         uraiden_instance.transact({'from': sender}).settle(receiver, open_block_number)
 
     uraiden_instance.transact({'from': sender}).topUp(

@@ -1,5 +1,5 @@
 import pytest
-from ethereum import tester
+from eth_tester.exceptions import TransactionFailed
 from tests.fixtures import (
     contract_params,
     channel_params,
@@ -166,5 +166,5 @@ def test_delegate_remove_trusted_contract(
     ])
 
     # Delegate create channel should fail now
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         delegate_instance.transact({"from": sender}).createChannelERC20(sender, receiver, deposit)

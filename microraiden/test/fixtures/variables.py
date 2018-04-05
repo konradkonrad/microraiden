@@ -1,6 +1,5 @@
 import pytest
-from eth_utils import encode_hex, remove_0x_prefix
-from ethereum.tester import keys
+from eth_utils import remove_0x_prefix
 
 import os
 import json
@@ -61,7 +60,7 @@ def init_contract_address():
 
 @pytest.fixture(scope='session')
 def deployer_privkey():
-    return remove_0x_prefix(encode_hex(keys[3]))
+    return remove_0x_prefix('0x0000000000000000000000000000000000000000000000000000000000000004')
 
 
 @pytest.fixture(scope='session')

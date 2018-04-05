@@ -1,5 +1,5 @@
 import pytest
-from ethereum import tester
+from eth_tester.exceptions import TransactionFailed
 from eth_utils import encode_hex, is_same_address
 from utils import sign
 from tests.utils import balance_proof_hash, closing_message_hash
@@ -66,13 +66,13 @@ def test_withdraw_call(channel_params, uraiden_instance, get_channel):
             -1,
             balance_msg_sig
         )
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         uraiden_instance.transact({"from": receiver}).withdraw(
             open_block_number,
             balance,
             encode_hex(bytearray())
         )
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         uraiden_instance.transact({"from": receiver}).withdraw(
             open_block_number,
             0,
@@ -113,19 +113,19 @@ def test_withdraw_fail_no_channel(
     balance_msg_sig, addr = sign.check(balance_message_hash, tester.k2)
     assert is_same_address(addr, sender)
 
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         uraiden_instance.transact({"from": sender}).withdraw(
             open_block_number,
             balance,
             balance_msg_sig
         )
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         uraiden_instance.transact({"from": A}).withdraw(
             open_block_number,
             balance,
             balance_msg_sig
         )
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         uraiden_instance.transact({"from": receiver}).withdraw(
             open_block_number,
             balance,
@@ -160,7 +160,7 @@ def test_balance_big(
     balance_msg_sig, addr = sign.check(balance_message_hash, tester.k2)
     assert is_same_address(addr, sender)
 
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         uraiden_instance.transact({"from": receiver}).withdraw(
             open_block_number,
             balance_big,
@@ -217,7 +217,7 @@ def test_balance_remaining_big(
         balance_msg_sig1
     )
 
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         uraiden_instance.transact({"from": receiver}).withdraw(
             open_block_number,
             balance2_big,
@@ -258,7 +258,7 @@ def test_withdraw_fail_in_challenge_period(
     channel_info = uraiden_instance.call().getChannelInfo(sender, receiver, open_block_number)
     assert channel_info[2] > 0  # settle_block_number
 
-    with pytest.raises(tester.TransactionFailed):
+    with pytest.raises(TransactionFailed):
         uraiden_instance.transact({"from": receiver}).withdraw(
             open_block_number,
             balance,

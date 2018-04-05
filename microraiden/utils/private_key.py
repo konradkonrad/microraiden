@@ -6,7 +6,7 @@ import os
 import stat
 
 from eth_utils import is_hex, decode_hex, encode_hex
-from ethereum import keys
+from eth_keys import keys
 
 log = logging.getLogger(__name__)
 

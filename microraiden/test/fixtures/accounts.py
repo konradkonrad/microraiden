@@ -4,13 +4,11 @@ from typing import List
 import pytest
 
 from eth_utils import (
-    decode_hex,
     encode_hex,
     is_hex,
     remove_0x_prefix,
     keccak
 )
-import ethereum.tester
 from web3 import Web3
 from web3.contract import Contract
 
@@ -43,7 +41,7 @@ def private_keys(private_key_seed: int) -> List[str]:
     Note: using 0 as the seed computes tester coinbase as the first address. This might cause
     issues, especially on sweeping all of these accounts, as the coinbase cannot be swept.
     """
-    return [encode_hex(keccak(str(private_key_seed + i))) for i in range(10)]
+    return [encode_hex(keccak(text=str(private_key_seed + i))) for i in range(10)]
 
 
 @pytest.fixture(scope='session')
@@ -56,16 +54,16 @@ def faucet_private_key(request, faucet_password_path: str) -> str:
     private_key = request.config.getoption('faucet_private_key')
     if is_hex(private_key):
         assert len(remove_0x_prefix(private_key)) == 64
-        return private_key
+        return bytes(private_key, 'ascii')
     else:
         private_key = get_private_key(private_key, faucet_password_path)
         assert private_key is not None, 'Error loading faucet private key from file.'
-        return private_key
+        return bytes(private_key, 'ascii')
 
 
 @pytest.fixture(scope='session')
 def faucet_address(faucet_private_key: str):
-    return privkey_to_addr(faucet_private_key)
+    return privkey_to_addr(faucet_private_key.decode('ascii'))
 
 
 @pytest.fixture(scope='session')
@@ -81,8 +79,7 @@ def make_account(
     def account_factory(eth_allowance: int, token_allowance: int, private_key: str):
         address = privkey_to_addr(private_key)
         if use_tester:
-            ethereum.tester.accounts.append(decode_hex(address))
-            ethereum.tester.keys.append(decode_hex(private_key))
+            web3.personal.importRawKey(private_key, 'nopassphrase')
         fund_account(
             address,
             eth_allowance,
@@ -90,14 +87,13 @@ def make_account(
             token_contract,
             web3,
             wait_for_transaction,
-            faucet_private_key
+            faucet_private_key.decode('ascii')
         )
 
         def finalize():
             sweep_account(private_key, faucet_address, token_contract, web3, wait_for_transaction)
             if use_tester:
-                ethereum.tester.accounts.remove(decode_hex(address))
-                ethereum.tester.keys.remove(decode_hex(private_key))
+                web3.provider.account_keys.remove(private_key)
         request.addfinalizer(finalize)
         return private_key
     return account_factory

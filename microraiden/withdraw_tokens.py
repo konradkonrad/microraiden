@@ -20,7 +20,8 @@ from eth_utils import (
     is_same_address,
     denoms,
 )
-from ethereum.tester import TransactionFailed
+# FIXME: import should be optional
+from eth_tester.exceptions import TransactionFailed
 from web3 import Web3, HTTPProvider
 from web3.contract import Contract
 from web3.exceptions import BadFunctionCallOutput
